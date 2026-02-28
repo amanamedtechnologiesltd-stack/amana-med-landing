@@ -614,8 +614,8 @@
                 <div>
                     <input type="email" name="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
                 </div>
-                <div id="Pharmacy Name" class="hidden">
-    <input type="text" name="pharmacyName" placeholder="Pharmacy Name (e.g. Amana Pharmacy)" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
+                <div id="pharmacyField" class="hidden">
+    <input type="text" name="pharmacyName" placeholder="Pharmacy Name (e.g. Amana Pharmacy)" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">
                 </div>
                 <button type="submit" class="w-full bg-amana-primary text-white py-4 rounded-xl font-bold shadow-lg hover:bg-amana-dark transition transform hover:scale-[1.02]">
                     Secure My Spot
@@ -739,25 +739,38 @@
         }
 
         function toggleRole(role) {
-            const isPatient = role === 'patient';
-            const userRoleInput = document.getElementById('userRole');
-            const pcnField = document.getElementById('pcnField');
-            const btnPatient = document.getElementById('btnPatient');
-            const btnPharmacy = document.getElementById('btnPharmacy');
-            
-            if (userRoleInput) userRoleInput.value = role;
-            if (pcnField) pcnField.classList.toggle('hidden', isPatient);
-            
-            if (btnPatient) {
-                btnPatient.className = isPatient 
-                    ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
-                    : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
-            }
-            if (btnPharmacy) {
-                btnPharmacy.className = !isPatient 
-                    ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
-                    : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
-            }
+    const isPatient = (role === 'patient');
+    
+    // 1. Update the hidden input
+    const userRoleInput = document.getElementById('userRole');
+    if (userRoleInput) userRoleInput.value = role;
+
+    // 2. Switch from pcnField to pharmacyField
+    const field = document.getElementById('pharmacyField'); 
+    if (field) {
+        if (isPatient) {
+            field.classList.add('hidden');
+        } else {
+            field.classList.remove('hidden');
+        }
+    }
+
+    // 3. Update button colors (keep your existing style classes)
+    const btnPatient = document.getElementById('btnPatient');
+    const btnPharmacy = document.getElementById('btnPharmacy');
+    
+    if (btnPatient) {
+        btnPatient.className = isPatient 
+            ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
+            : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
+    }
+    if (btnPharmacy) {
+        btnPharmacy.className = !isPatient 
+            ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
+            : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
+    }
+}
+
         }
 
         // Form Handlers
