@@ -827,9 +827,10 @@
         };
 
         try {
-            // Send data to the "waitlist" collection in Firestore
-            await addDoc(collection(db, "waitlist"), userData);
-            
+  // This tells Firebase which "folder" to use based on the button clicked
+const folder = userData.role === 'pharmacy' ? "waitlist_pharmacies" : "waitlist_patients";
+await addDoc(collection(db, folder), userData);
+      
             alert("Success! You're on the Amana waitlist.");
             closeBeta(); // Closes the modal
             form.reset(); // Clears the form
