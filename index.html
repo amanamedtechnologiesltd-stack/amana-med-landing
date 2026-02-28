@@ -792,12 +792,11 @@
         });
     </script>
 <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-    
-    // Your web app's Firebase configuration
+    // 1. Import Firebase Apps and Firestore
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 2. Your Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCgWBmw6uFdjJDqTucqjXVAHssSab20uSM",
         authDomain: "amana-6d9c3.firebaseapp.com",
@@ -806,9 +805,69 @@
         messagingSenderId: "317118788949",
         appId: "1:317118788949:web:c8d92b8c7e3c2bb24cebdc"
     };
-    
-    // Initialize Firebase
+
+    // 3. Initialize Firebase & Firestore
     const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 4. Function to handle Waitlist Submissions
+    window.handleBetaSubmit = async function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        const userData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            role: formData.get('role'),
+            pcn: formData.get('pcn') || "N/A",
+            timestamp: serverTimestamp()
+        };
+
+        try {
+            // Send data to the "waitlist" collection in Firestore
+            await addDoc(collection(db, "waitlist"), userData);
+            
+            alert("Success! You're on the Amana waitlist.");
+            closeBeta(); // Closes the modal
+            form.reset(); // Clears the form
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert("Connection error. Please try again or check your internet.");
+        }
+    };
+
+    // 5. Function to handle Volunteer/Career Submissions
+    window.handleCareerSubmit = async function(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        const careerData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            location: formData.get('location'),
+            expertise: formData.get('expertise'),
+            experience: formData.get('experience'),
+            timestamp: serverTimestamp()
+        };
+
+        try {
+            await addDoc(collection(db, "careers"), careerData);
+            
+            // Show success message on UI
+            document.getElementById('careerForm').style.display = 'none';
+            document.getElementById('careerSuccess').classList.remove('hidden');
+        } catch (error) {
+            console.error("Error submitting career: ", error);
+            alert("Submission failed. Please check your connection.");
+        }
+    };
+       
 </script>
 </body>
 </html>
