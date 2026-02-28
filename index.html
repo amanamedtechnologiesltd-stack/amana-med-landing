@@ -793,12 +793,9 @@
         });
     </script>
 <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-    
-    // Your web app's Firebase configuration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
     const firebaseConfig = {
         apiKey: "AIzaSyCgWBmw6uFdjJDqTucqjXVAHssSab20uSM",
         authDomain: "amana-6d9c3.firebaseapp.com",
@@ -807,9 +804,59 @@
         messagingSenderId: "317118788949",
         appId: "1:317118788949:web:c8d92b8c7e3c2bb24cebdc"
     };
-    
-    // Initialize Firebase
+
     const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Function for Waitlist (Patients vs Pharmacies)
+    window.handleBetaSubmit = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const role = formData.get('role'); // This gets 'patient' or 'pharmacy'
+
+        // Determine which collection to use based on the role
+        const collectionName = role === 'pharmacy' ? "waitlist_pharmacies" : "waitlist_patients";
+
+        try {
+            await addDoc(collection(db, collectionName), {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                pcnNumber: formData.get('pcn') || "N/A",
+                signupDate: serverTimestamp()
+            });
+            alert("Success! Welcome to Amana.");
+            closeBeta();
+            form.reset();
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Submission failed. Check your internet.");
+        }
+    };
+
+    // Function for Career Volunteers
+    window.handleCareerSubmit = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            await addDoc(collection(db, "volunteer_applications"), {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                expertise: formData.get('expertise'),
+                experience: formData.get('experience'),
+                location: formData.get('location'),
+                signupDate: serverTimestamp()
+            });
+            document.getElementById('careerForm').style.display = 'none';
+            document.getElementById('careerSuccess').classList.remove('hidden');
+        } catch (error) {
+            alert("Error submitting application.");
+        }
+    };
 </script>
+
+
 </body>
 </html>
