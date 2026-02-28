@@ -1,1 +1,815 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Amana | Verified Pharmacy Marketplace & Health Wallet Nigeria</title>
+    <meta name="description" content="Find verified pharmacies in Lagos, Abuja, and across Nigeria. Search for rare medications, save with 2% cashback, and access PCN-certified healthcare.">
+    <meta name="keywords" content="Pharmacy Nigeria, Buy Drugs Online Lagos, NAFDAC verified, Health Savings, PCN Pharmacist, Nigeria Health Tech, Amana">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        amana: { 
+                            primary: '#059669', 
+                            dark: '#047857', 
+                            light: '#34d399',
+                            yellow: '#a3e635',
+                            accent: '#f59e0b',
+                            bg: '#ecfdf5'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #059669 0%, #047857 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .loading-bar {
+            background: linear-gradient(90deg, #059669 0%, #a3e635 50%, #059669 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s linear infinite;
+        }
+        .feature-card { 
+            transition: all 0.3s ease; 
+        }
+        .feature-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.1); 
+        }
+        .legal-content h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; color: #059669; }
+        .legal-content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #047857; }
+        .legal-content p { margin-bottom: 1rem; line-height: 1.7; color: #4b5563; }
+        .legal-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .legal-content li { margin-bottom: 0.5rem; color: #4b5563; }
+        #loadingOverlay { transition: opacity 0.8s ease-out; }
+        
+        .page-section {
+            display: none;
+            min-height: 100vh;
+        }
+        .page-section.active {
+            display: block !important;
+        }
+        #home.page-section.active {
+            display: block !important;
+        }
+        
+        /* Logo animation */
+        .logo-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Success checkmark animation */
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #059669;
+            stroke-miterlimit: 10;
+            margin: 10% auto;
+            box-shadow: inset 0px 0px 0px #059669;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #059669;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px #059669; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- Enhanced Loading Overlay with Amana Logo -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center">
+        <!-- Amana Logo Animation -->
+        <div class="w-32 h-32 mb-4 logo-float">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background circle -->
+                <circle cx="50" cy="50" r="45" fill="#d1fae5" fill-opacity="0.3"/>
+                <!-- Capsule bottom (green) -->
+                <ellipse cx="50" cy="58" rx="20" ry="25" fill="#059669"/>
+                <!-- Capsule top (yellow-green) -->
+                <ellipse cx="50" cy="42" rx="20" ry="23" fill="#a3e635" fill-opacity="0.95"/>
+                <!-- Middle band -->
+                <rect x="30" y="45" width="40" height="8" fill="#047857" fill-opacity="0.4"/>
+                <!-- Leaf -->
+                <path d="M50 65 L56 78 L58 85 L54 88 L50 82 L46 88 L42 85 L44 78 L50 65Z" fill="#f59e0b"/>
+                <!-- Leaf vein -->
+                <line x1="50" y1="65" x2="50" y2="85" stroke="white" stroke-width="2.5" stroke-opacity="0.7" stroke-linecap="round"/>
+                <!-- Highlight -->
+                <ellipse cx="46" cy="48" rx="5" ry="8" fill="white" fill-opacity="0.2"/>
+            </svg>
+        </div>
+        <h1 class="text-3xl font-bold mb-2 text-gray-900">Amana</h1>
+        <p id="loadingText" class="text-gray-500 mb-8">Initializing Health Ecosystem...</p>
+        <div class="w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div id="progressBar" class="h-full loading-bar rounded-full" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- Navigation with Amana Logo -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 z-40">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('home')">
+                <!-- Amana Logo -->
+                <div class="w-10 h-10">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#d1fae5" fill-opacity="0.3"/>
+                        <ellipse cx="50" cy="58" rx="20" ry="25" fill="#059669"/>
+                        <ellipse cx="50" cy="42" rx="20" ry="23" fill="#a3e635" fill-opacity="0.95"/>
+                        <rect x="30" y="45" width="40" height="8" fill="#047857" fill-opacity="0.4"/>
+                        <path d="M50 65 L56 78 L58 85 L54 88 L50 82 L46 88 L42 85 L44 78 L50 65Z" fill="#f59e0b"/>
+                        <line x1="50" y1="65" x2="50" y2="85" stroke="white" stroke-width="2.5" stroke-opacity="0.7" stroke-linecap="round"/>
+                        <ellipse cx="46" cy="48" rx="5" ry="8" fill="white" fill-opacity="0.2"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-gray-900">Amana</span>
+            </div>
+            <div class="hidden md:flex gap-8 items-center text-sm font-semibold text-gray-600">
+                <button onclick="showPage('home')" class="hover:text-amana-primary transition">Home</button>
+                <button onclick="showPage('home'); setTimeout(()=>document.getElementById('features').scrollIntoView({behavior:'smooth'}),100)" class="hover:text-amana-primary transition">Solution</button>
+                <button onclick="showPage('careers')" class="hover:text-amana-primary transition">Careers</button>
+                <button onclick="showPage('privacy')" class="hover:text-amana-primary transition">Privacy</button>
+                <button onclick="showPage('terms')" class="hover:text-amana-primary transition">Terms</button>
+                <button onclick="openBeta()" class="bg-amana-primary text-white px-6 py-2 rounded-full hover:bg-amana-dark shadow-md transition">Get Early Access</button>
+            </div>
+            <!-- Mobile menu button -->
+            <button class="md:hidden text-gray-600" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-100 p-4">
+            <div class="flex flex-col gap-3">
+                <button onclick="showPage('home')" class="text-left text-gray-600 hover:text-amana-primary py-2">Home</button>
+                <button onclick="showPage('careers')" class="text-left text-gray-600 hover:text-amana-primary py-2">Careers</button>
+                <button onclick="showPage('privacy')" class="text-left text-gray-600 hover:text-amana-primary py-2">Privacy Policy</button>
+                <button onclick="showPage('terms')" class="text-left text-gray-600 hover:text-amana-primary py-2">Terms of Service</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="page-section active" style="display: block;">
+        <div id="mainContent" class="opacity-0 transition-opacity duration-1000 pt-16">
+            
+            <section class="relative pt-32 pb-16 lg:pt-48 lg:pb-32 bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/30 overflow-hidden">
+                <div class="absolute top-20 right-0 w-96 h-96 bg-amana-primary/10 rounded-full blur-3xl animate-float"></div>
+                <div class="absolute bottom-0 left-0 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+                
+                <div class="relative max-w-7xl mx-auto px-6 z-10 text-center">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-amana-dark rounded-full text-xs font-bold mb-6 border border-emerald-200 uppercase tracking-widest">
+                        <span class="w-2 h-2 bg-amana-primary rounded-full animate-pulse"></span>
+                        Coming Soon to Nigeria
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-extrabold mb-8 leading-[1.1] text-gray-900">
+                        Healthcare Made <br><span class="gradient-text tracking-tight">Simple & Secure</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        Amana is Nigeria's unified health marketplace connecting patients with PCN-verified pharmacies. Save money, track medications, and access quality care.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="openBeta()" class="bg-amana-primary text-white px-10 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:scale-105 transition duration-300 flex items-center justify-center gap-2">
+                            <i class="fas fa-bell"></i>
+                            Join the Waitlist
+                        </button>
+                        <button onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" class="bg-white border-2 border-gray-100 text-gray-700 px-10 py-4 rounded-full font-bold text-lg hover:border-amana-primary hover:text-amana-primary transition flex items-center justify-center gap-2">
+                            <i class="fas fa-play-circle"></i>
+                            See How It Works
+                        </button>
+                    </div>
+                    
+                    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto opacity-80">
+                        <div class="text-center"><p class="text-3xl font-bold text-amana-primary">2%</p><p class="text-xs text-gray-500 uppercase font-bold">Cashback</p></div>
+                        <div class="text-center"><p class="text-3xl font-bold text-amana-primary">100%</p><p class="text-xs text-gray-500 uppercase font-bold">PCN Verified</p></div>
+                        <div class="text-center"><p class="text-3xl font-bold text-amana-primary">24/7</p><p class="text-xs text-gray-500 uppercase font-bold">Drug Locator</p></div>
+                        <div class="text-center"><p class="text-3xl font-bold text-amana-primary">NDPA</p><p class="text-xs text-gray-500 uppercase font-bold">Data Secure</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-10 bg-white border-y border-gray-100">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition duration-500">
+                        <div class="flex items-center gap-2"><i class="fas fa-building-columns text-2xl"></i><span class="font-bold text-sm">PCN COMPLIANT</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-shield-virus text-2xl"></i><span class="font-bold text-sm">NAFDAC PROTOCOLS</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-id-card text-2xl"></i><span class="font-bold text-sm">NIMC INTEGRATED</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-lock text-2xl"></i><span class="font-bold text-sm">NDPA SECURE</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="py-24 bg-gray-50">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">One Ecosystem. Two Solutions.</h2>
+                        <p class="text-gray-500">Tailored experiences for those seeking care and those providing it.</p>
+                    </div>
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                                    <i class="fas fa-user-injured text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900">For Patients</h3>
+                            </div>
+                            <div class="feature-card bg-white p-6 rounded-2xl border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-amana-primary flex-shrink-0"><i class="fas fa-piggy-bank"></i></div>
+                                    <div><h4 class="font-bold text-gray-900 mb-1">Health Savings Wallet</h4><p class="text-sm text-gray-500">Automated savings for medical emergencies with 2% cashback on every purchase.</p></div>
+                                </div>
+                            </div>
+                            <div class="feature-card bg-white p-6 rounded-2xl border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-amana-primary flex-shrink-0"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div><h4 class="font-bold text-gray-900 mb-1">Emergency Drug Locator</h4><p class="text-sm text-gray-500">Instant GPS-based search for rare or urgent medications in verified stores near you.</p></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-amana-primary">
+                                    <i class="fas fa-clinic-medical text-2xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900">For Pharmacies</h3>
+                            </div>
+                            <div class="feature-card bg-white p-6 rounded-2xl border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0"><i class="fas fa-chart-line"></i></div>
+                                    <div><h4 class="font-bold text-gray-900 mb-1">Smart Inventory Manager</h4><p class="text-sm text-gray-500">Real-time stock tracking with "Expiring Soon" alerts to reduce product waste.</p></div>
+                                </div>
+                            </div>
+                            <div class="feature-card bg-white p-6 rounded-2xl border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0"><i class="fas fa-users"></i></div>
+                                    <div><h4 class="font-bold text-gray-900 mb-1">Customer Discovery</h4><p class="text-sm text-gray-500">Appear in search results when patients need your specific stock. Expand your reach.</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="py-20 bg-amana-primary relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+                <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+                    <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Be the First to Experience Amana</h2>
+                    <p class="text-emerald-100 text-lg mb-8">Join our waitlist and get exclusive early access + bonus cashback credits when we launch.</p>
+                    <form class="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto" onsubmit="event.preventDefault(); openBeta();">
+                        <input type="email" placeholder="Enter your email address" class="flex-1 px-6 py-4 rounded-full text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300">
+                        <button type="submit" class="bg-amber-500 text-white px-8 py-4 rounded-full font-bold hover:bg-amber-600 transition shadow-lg">Join Waitlist</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="bg-gray-900 text-gray-400 py-12 px-6 border-t border-gray-800">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid md:grid-cols-4 gap-8 mb-8">
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <!-- Amana Logo in footer -->
+                                <div class="w-8 h-8">
+                                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="45" fill="#d1fae5" fill-opacity="0.3"/>
+                                        <ellipse cx="50" cy="58" rx="20" ry="25" fill="#059669"/>
+                                        <ellipse cx="50" cy="42" rx="20" ry="23" fill="#a3e635" fill-opacity="0.95"/>
+                                        <rect x="30" y="45" width="40" height="8" fill="#047857" fill-opacity="0.4"/>
+                                        <path d="M50 65 L56 78 L58 85 L54 88 L50 82 L46 88 L42 85 L44 78 L50 65Z" fill="#f59e0b"/>
+                                        <line x1="50" y1="65" x2="50" y2="85" stroke="white" stroke-width="2.5" stroke-opacity="0.7" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <span class="text-xl font-bold text-white">Amana</span>
+                            </div>
+                            <p class="text-sm">Nigeria's unified health marketplace. Secure, verified, accessible.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold mb-4">Platform</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li><button onclick="showPage('home')" class="hover:text-amana-primary transition">For Patients</button></li>
+                                <li><button onclick="showPage('home')" class="hover:text-amana-primary transition">For Pharmacies</button></li>
+                                <li><button onclick="showPage('careers')" class="hover:text-amana-primary transition">Careers</button></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold mb-4">Company</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li><button onclick="showPage('home')" class="hover:text-amana-primary transition">About Us</button></li>
+                                <li><button onclick="showPage('careers')" class="hover:text-amana-primary transition">Careers</button></li>
+                                <li><a href="mailto:amanamedtechnologiesltd@gmail.com" class="hover:text-amana-primary transition">Contact: amanamedtechnologiesltd@gmail.com</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold mb-4">Legal</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li><button onclick="showPage('privacy')" class="hover:text-amana-primary transition">Privacy Policy</button></li>
+                                <li><button onclick="showPage('terms')" class="hover:text-amana-primary transition">Terms of Service</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p class="text-sm">© 2026 Amana Med Technologies Ltd. All rights reserved.</p>
+                        <div class="flex gap-4">
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-amana-primary hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-amana-primary hover:text-white transition"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-amana-primary hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- PRIVACY POLICY PAGE -->
+    <div id="privacy" class="page-section" style="display: none;">
+        <div class="pt-24 pb-12 min-h-screen bg-white">
+            <div class="max-w-4xl mx-auto px-6 legal-content">
+                <div class="mb-8">
+                    <button onclick="showPage('home')" class="text-amana-primary hover:underline mb-4 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Privacy Policy</h1>
+                    <p class="text-gray-500">Last updated: February 28, 2026</p>
+                </div>
+
+                <div class="bg-emerald-50 border-l-4 border-amana-primary p-4 mb-8">
+                    <p class="text-sm text-gray-700"><strong>Contact:</strong> For privacy concerns, email us at <a href="mailto:amanamedtechnologiesltd@gmail.com" class="text-amana-primary underline">amanamedtechnologiesltd@gmail.com</a></p>
+                </div>
+
+                <h2>1. Introduction</h2>
+                <p>Amana Med Technologies Ltd ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our healthcare marketplace platform, in compliance with the <strong>Nigeria Data Protection Act (NDPA) 2023</strong> and other applicable regulations.</p>
+
+                <h2>2. Information We Collect</h2>
+                <h3>2.1 Personal Information</h3>
+                <ul>
+                    <li><strong>Identity Data:</strong> Full name, date of birth, gender, NIMC number (for patient verification), PCN registration number (for pharmacies)</li>
+                    <li><strong>Contact Data:</strong> Email address, phone number, residential address</li>
+                    <li><strong>Health Data:</strong> Medication history, prescription details, adverse drug reactions reported (with your explicit consent)</li>
+                    <li><strong>Financial Data:</strong> Bank account details, transaction history, health wallet balances (processed via PCI-DSS compliant payment processors)</li>
+                    <li><strong>Technical Data:</strong> IP address, device information, browser type, location data (GPS for pharmacy locator)</li>
+                </ul>
+
+                <h2>3. How We Use Your Information</h2>
+                <ul>
+                    <li>To verify your identity and maintain PCN/NAFDAC compliance</li>
+                    <li>To facilitate medication purchases and health wallet transactions</li>
+                    <li>To locate nearby pharmacies and check medication availability</li>
+                    <li>To process adverse drug reaction reports to NAFDAC</li>
+                </ul>
+
+                <h2>4. Your Rights (NDPA Rights)</h2>
+                <p>You have the right to access, rectify, erase, and port your data. Contact us at <a href="mailto:amanamedtechnologiesltd@gmail.com" class="text-amana-primary underline">amanamedtechnologiesltd@gmail.com</a> to exercise these rights.</p>
+
+                <h2>5. Contact Us</h2>
+                <p><strong>Email:</strong> <a href="mailto:amanamedtechnologiesltd@gmail.com" class="text-amana-primary underline">amanamedtechnologiesltd@gmail.com</a><br>
+                <strong>Address:</strong> Lagos, Nigeria</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TERMS OF SERVICE PAGE -->
+    <div id="terms" class="page-section" style="display: none;">
+        <div class="pt-24 pb-12 min-h-screen bg-white">
+            <div class="max-w-4xl mx-auto px-6 legal-content">
+                <div class="mb-8">
+                    <button onclick="showPage('home')" class="text-amana-primary hover:underline mb-4 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Terms of Service</h1>
+                    <p class="text-gray-500">Last updated: February 28, 2026</p>
+                </div>
+
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-8">
+                    <p class="text-sm text-gray-700"><strong>Important:</strong> By accessing or using Amana, you agree to be bound by these Terms.</p>
+                </div>
+
+                <h2>1. Definitions</h2>
+                <ul>
+                    <li><strong>"Platform"</strong> refers to the Amana website, mobile applications, and services operated by Amana Med Technologies Ltd</li>
+                    <li><strong>"User"</strong> refers to patients, pharmacies, healthcare providers, and visitors</li>
+                </ul>
+
+                <h2>2. Eligibility</h2>
+                <p>To use Amana, you must be at least 18 years old, a resident of Nigeria, and provide accurate registration information.</p>
+
+                <h2>3. Contact Information</h2>
+                <p>For legal inquiries: <a href="mailto:amanamedtechnologiesltd@gmail.com" class="text-amana-primary underline">amanamedtechnologiesltd@gmail.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAREERS PAGE -->
+    <div id="careers" class="page-section" style="display: none;">
+        <div class="pt-24 pb-12 min-h-screen bg-gray-50">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="mb-8">
+                    <button onclick="showPage('home')" class="text-amana-primary hover:underline mb-4 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Join Our Mission</h1>
+                    <p class="text-gray-600 text-lg">Help us transform healthcare access in Nigeria. We're looking for passionate volunteers.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                    <div class="flex items-center gap-3 mb-6 text-amana-primary">
+                        <!-- Amana Logo -->
+                        <div class="w-10 h-10">
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="45" fill="#d1fae5" fill-opacity="0.3"/>
+                                <ellipse cx="50" cy="58" rx="20" ry="25" fill="#059669"/>
+                                <ellipse cx="50" cy="42" rx="20" ry="23" fill="#a3e635" fill-opacity="0.95"/>
+                                <rect x="30" y="45" width="40" height="8" fill="#047857" fill-opacity="0.4"/>
+                                <path d="M50 65 L56 78 L58 85 L54 88 L50 82 L46 88 L42 85 L44 78 L50 65Z" fill="#f59e0b"/>
+                                <line x1="50" y1="65" x2="50" y2="85" stroke="white" stroke-width="2.5" stroke-opacity="0.7" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold">Volunteer With Us</h2>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                            <h3 class="font-bold text-gray-900 mb-2"><i class="fas fa-code text-amana-primary mr-2"></i>Software Development</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Frontend (React, Vue, Tailwind)</li>
+                                <li>• Backend (Node.js, Python, PHP)</li>
+                                <li>• Mobile (React Native, Flutter)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <h3 class="font-bold text-gray-900 mb-2"><i class="fas fa-bullhorn text-blue-600 mr-2"></i>Sales & Marketing</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Digital Marketing & SEO</li>
+                                <li>• Content Creation</li>
+                                <li>• Pharmacy Partnership Sales</li>
+                            </ul>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                            <h3 class="font-bold text-gray-900 mb-2"><i class="fas fa-check-circle text-purple-600 mr-2"></i>Quality Control</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Pharmacy Verification</li>
+                                <li>• Drug Authenticity Checks</li>
+                                <li>• UX Testing</li>
+                            </ul>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                            <h3 class="font-bold text-gray-900 mb-2"><i class="fas fa-user-md text-amber-600 mr-2"></i>Healthcare</h3>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Pharmacist Consultants</li>
+                                <li>• Medical Content Advisors</li>
+                                <li>• NAFDAC Liaison</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <form id="careerForm" class="space-y-6" onsubmit="handleCareerSubmit(event)">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                                <input type="text" name="name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" name="email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none" placeholder="john@example.com">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" name="phone" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none" placeholder="+234 800 000 0000">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
+                                <input type="text" name="location" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none" placeholder="Lagos, Nigeria">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Area of Expertise *</label>
+                            <select name="expertise" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none">
+                                <option value="">Select your expertise</option>
+                                <option value="frontend">Frontend Development</option>
+                                <option value="backend">Backend Development</option>
+                                <option value="mobile">Mobile Development</option>
+                                <option value="devops">DevOps/Cloud</option>
+                                <option value="sales">Sales</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="content">Content Creation</option>
+                                <option value="quality">Quality Control</option>
+                                <option value="pharmacy">Pharmacy/Healthcare</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tell us about your experience *</label>
+                            <textarea name="experience" required rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none" placeholder="Briefly describe your relevant experience..."></textarea>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" name="commitment" required class="mt-1 w-5 h-5 text-amana-primary rounded focus:ring-amana-primary">
+                            <label class="text-sm text-gray-600">I confirm that I can commit at least 5 hours per week to volunteering with Amana.</label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-amana-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-amana-dark transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Application
+                        </button>
+                    </form>
+
+                    <!-- Success Message -->
+                    <div id="careerSuccess" class="hidden mt-6 p-6 bg-emerald-100 border border-emerald-300 rounded-xl text-center">
+                        <svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Application Received!</h3>
+                        <p class="text-gray-700">Thank you for your interest. Our team will review your application and contact you via email within 5-7 business days.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Beta Modal -->
+    <div id="betaModal" class="fixed inset-0 bg-black/60 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white w-full max-w-md rounded-3xl p-8 relative shadow-2xl transform transition-all scale-95 opacity-0" id="modalContent">
+            <button onclick="closeBeta()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <!-- Amana Logo in Modal -->
+            <div class="flex justify-center mb-4">
+                <div class="w-16 h-16">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="#d1fae5" fill-opacity="0.3"/>
+                        <ellipse cx="50" cy="58" rx="20" ry="25" fill="#059669"/>
+                        <ellipse cx="50" cy="42" rx="20" ry="23" fill="#a3e635" fill-opacity="0.95"/>
+                        <rect x="30" y="45" width="40" height="8" fill="#047857" fill-opacity="0.4"/>
+                        <path d="M50 65 L56 78 L58 85 L54 88 L50 82 L46 88 L42 85 L44 78 L50 65Z" fill="#f59e0b"/>
+                        <line x1="50" y1="65" x2="50" y2="85" stroke="white" stroke-width="2.5" stroke-opacity="0.7" stroke-linecap="round"/>
+                        <ellipse cx="46" cy="48" rx="5" ry="8" fill="white" fill-opacity="0.2"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Get Early Access</h3>
+                <p class="text-sm text-gray-500 mt-2">Join the future of Nigerian healthcare.</p>
+            </div>
+            <div class="flex bg-gray-100 p-1 rounded-full mb-8">
+                <button id="btnPatient" onclick="toggleRole('patient')" class="flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all">I'm a Patient</button>
+                <button id="btnPharmacy" onclick="toggleRole('pharmacy')" class="flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all">I'm a Pharmacy</button>
+            </div>
+            <form id="betaForm" class="space-y-4" onsubmit="handleBetaSubmit(event)">
+                <input type="hidden" id="userRole" name="role" value="patient">
+                <div>
+                    <input type="text" name="name" placeholder="Full Name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
+                </div>
+                <div>
+                    <input type="email" name="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
+                </div>
+                <div id="pcnField" class="hidden">
+                    <input type="text" name="pcn" placeholder="PCN Reg Number (e.g. PCN/R/1234)" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-amana-primary text-white py-4 rounded-xl font-bold shadow-lg hover:bg-amana-dark transition transform hover:scale-[1.02]">
+                    Secure My Spot
+                </button>
+                <p class="text-[10px] text-center text-gray-400 mt-4 leading-tight">
+                    By joining, you agree to Amana's pre-launch privacy protocols.
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to track current page
+        let currentPage = 'home';
+
+        // Page Navigation Function
+        function showPage(pageId) {
+            console.log('Navigating to:', pageId);
+            
+            const allPages = document.querySelectorAll('.page-section');
+            allPages.forEach(page => {
+                page.style.display = 'none';
+                page.classList.remove('active');
+            });
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                targetPage.classList.add('active');
+                currentPage = pageId;
+                
+                if (pageId === 'home') {
+                    document.getElementById('mainContent').style.display = 'block';
+                }
+                
+                window.scrollTo(0, 0);
+            } else {
+                console.error('Page not found:', pageId);
+            }
+            
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu) {
+                mobileMenu.classList.add('hidden');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        // Loading Animation
+        const loadingMessages = [
+            "Syncing with PCN database...",
+            "Checking NAFDAC safety protocols...",
+            "Initializing health wallet encryption...",
+            "Locating nearby verified stores...",
+            "Welcome to Amana."
+        ];
+
+        let progress = 0;
+        let messageIndex = 0;
+        const progressBar = document.getElementById('progressBar');
+        const loadingText = document.getElementById('loadingText');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainContent = document.getElementById('mainContent');
+
+        const loadingInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            
+            if (progressBar) progressBar.style.width = progress + '%';
+            if (loadingText && progress % 20 < 5 && messageIndex < loadingMessages.length) {
+                loadingText.textContent = loadingMessages[messageIndex];
+                messageIndex++;
+            }
+            
+            if (progress === 100) {
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    if (loadingOverlay) {
+                        loadingOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                            if (mainContent) {
+                                mainContent.classList.remove('opacity-0');
+                            }
+                        }, 500);
+                    }
+                }, 500);
+            }
+        }, 200);
+
+        // Modal Logic
+        function openBeta() {
+            const modal = document.getElementById('betaModal');
+            const content = document.getElementById('modalContent');
+            if (modal && content) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+        }
+
+        function closeBeta() {
+            const modal = document.getElementById('betaModal');
+            const content = document.getElementById('modalContent');
+            if (content) {
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+            }
+            if (modal) {
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function toggleRole(role) {
+            const isPatient = role === 'patient';
+            const userRoleInput = document.getElementById('userRole');
+            const pcnField = document.getElementById('pcnField');
+            const btnPatient = document.getElementById('btnPatient');
+            const btnPharmacy = document.getElementById('btnPharmacy');
+            
+            if (userRoleInput) userRoleInput.value = role;
+            if (pcnField) pcnField.classList.toggle('hidden', isPatient);
+            
+            if (btnPatient) {
+                btnPatient.className = isPatient 
+                    ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
+                    : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
+            }
+            if (btnPharmacy) {
+                btnPharmacy.className = !isPatient 
+                    ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
+                    : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
+            }
+        }
+
+        // Form Handlers
+        function handleCareerSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('careerForm');
+            const success = document.getElementById('careerSuccess');
+            
+            if (form) form.style.display = 'none';
+            if (success) success.classList.remove('hidden');
+            
+            alert("Application submitted successfully! You'll be contacted at the email provided.");
+        }
+
+        function handleBetaSubmit(e) {
+            e.preventDefault();
+            alert("Thanks for joining! We'll be in touch soon.");
+            closeBeta();
+        }
+
+        // Close modal on backdrop click
+        const betaModal = document.getElementById('betaModal');
+        if (betaModal) {
+            betaModal.addEventListener('click', function(e) {
+                if (e.target === this) closeBeta();
+            });
+        }
+
+        // Initialize - ensure home is visible
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('home');
+        });
+    </script>
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+    
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCgWBmw6uFdjJDqTucqjXVAHssSab20uSM",
+        authDomain: "amana-6d9c3.firebaseapp.com",
+        projectId: "amana-6d9c3",
+        storageBucket: "amana-6d9c3.firebasestorage.app",
+        messagingSenderId: "317118788949",
+        appId: "1:317118788949:web:c8d92b8c7e3c2bb24cebdc"
+    };
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+</script>
+</body>
+</html>
