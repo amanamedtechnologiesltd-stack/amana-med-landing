@@ -614,8 +614,8 @@
                 <div>
                     <input type="email" name="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
                 </div>
-                <div id="pharmacyField" class="hidden">
-    <input type="text" name="pharmacyName" placeholder="Pharmacy Name (e.g. Amana Pharmacy)" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                <div id="pcnField" class="hidden">
+    <input type="text" name="pharmacyName" placeholder="Pharmacy Name (e.g. Amana Pharmacy)" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amana-primary outline-none transition">
                 </div>
                 <button type="submit" class="w-full bg-amana-primary text-white py-4 rounded-xl font-bold shadow-lg hover:bg-amana-dark transition transform hover:scale-[1.02]">
                     Secure My Spot
@@ -739,40 +739,45 @@
         }
 
         function toggleRole(role) {
-    const isPatient = (role === 'patient');
-    
-    // 1. Update the hidden input
-    const userRoleInput = document.getElementById('userRole');
-    if (userRoleInput) userRoleInput.value = role;
-
-    // 2. Switch from pcnField to pharmacyField
-    const field = document.getElementById('pharmacyField'); 
-    if (field) {
-        if (isPatient) {
-            field.classList.add('hidden');
-        } else {
-            field.classList.remove('hidden');
+            const isPatient = role === 'patient';
+            const userRoleInput = document.getElementById('userRole');
+            const pcnField = document.getElementById('pcnField');
+            const btnPatient = document.getElementById('btnPatient');
+            const btnPharmacy = document.getElementById('btnPharmacy');
+            
+            if (userRoleInput) userRoleInput.value = role;
+            if (pcnField) pcnField.classList.toggle('hidden', isPatient);
+            
+            if (btnPatient) {
+                btnPatient.className = isPatient 
+                    ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
+                    : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
+            }
+            if (btnPharmacy) {
+                btnPharmacy.className = !isPatient 
+                    ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
+                    : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
+            }
         }
-    }
-
-    // 3. Update button colors (keep your existing style classes)
-    const btnPatient = document.getElementById('btnPatient');
-    const btnPharmacy = document.getElementById('btnPharmacy');
-    
-    if (btnPatient) {
-        btnPatient.className = isPatient 
-            ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
-            : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
-    }
-    if (btnPharmacy) {
-        btnPharmacy.className = !isPatient 
-            ? 'flex-1 py-2 rounded-full text-sm font-bold bg-white text-amana-primary shadow-sm transition-all'
-            : 'flex-1 py-2 rounded-full text-sm font-bold text-gray-500 transition-all';
-    }
-}
 
         // Form Handlers
-        
+        function handleCareerSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('careerForm');
+            const success = document.getElementById('careerSuccess');
+            
+            if (form) form.style.display = 'none';
+            if (success) success.classList.remove('hidden');
+            
+            alert("Application submitted successfully! You'll be contacted at the email provided.");
+        }
+
+        function handleBetaSubmit(e) {
+            e.preventDefault();
+            alert("Thanks for joining! We'll be in touch soon.");
+            closeBeta();
+        }
+
         // Close modal on backdrop click
         const betaModal = document.getElementById('betaModal');
         if (betaModal) {
@@ -806,58 +811,51 @@
     const db = getFirestore(app);
 
     // 4. Function to handle Waitlist Submissions
-    // ... (keep your Firebase Config and Initialize lines here)
+    window.handleBetaSubmit = async function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        const userData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            role: formData.get('role'),
+                pharmacyName: formData.get('pharmacyName') || "N/A",
+            timestamp: serverTimestamp()
+        };
 
-// 1. FIXED WAITLIST SUBMISSION
-window.handleBetaSubmit = async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    
-    const userData = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        role: formData.get('role'),
-        pharmacyName: formData.get('pharmacyName') || "N/A",
-        timestamp: serverTimestamp()
+        try {
+  // This tells Firebase which "folder" to use based on the button clicked
+const folder = userData.role === 'pharmacy' ? "waitlist_pharmacies" : "waitlist_patients";
+await addDoc(collection(db, folder), userData);
+      
+            alert("Success! You're on the Amana waitlist.");
+            closeBeta(); // Closes the modal
+            form.reset(); // Clears the form
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert("Connection error. Please try again or check your internet.");
+        }
     };
 
-    try {
-        const folder = userData.role === 'pharmacy' ? "Waitlist_Pharmacies" : "Waitlist_Patients";
-        await addDoc(collection(db, folder), userData);
-        alert("Success! You're on the Amana waitlist.");
-        closeBeta(); 
-        form.reset(); 
-    } catch (error) {
-        alert("Connection error. Check your Firebase Rules.");
-    }
-};
-
-// 2. FIXED CAREER SUBMISSION
-window.handleCareerSubmit = async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const successDiv = document.getElementById('careerSuccess');
-
-    const careerData = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        expertise: formData.get('expertise'),
-        location: formData.get('location'),
-        timestamp: serverTimestamp()
-    };
-
-    try {
-        await addDoc(collection(db, "Careers"), careerData);
-        form.style.display = 'none';
-        if (successDiv) successDiv.classList.remove('hidden');
-        alert("Application submitted successfully!");
-    } catch (error) {
-        alert("Submission failed. Please check your connection.");
-    }
-};
+    // 5. Function to handle Volunteer/Career Submissions
+    window.handleCareerSubmit = async function(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        
+        const careerData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            location: formData.get('location'),
+            expertise: formData.get('expertise'),
+            experience: formData.get('experience'),
+            timestamp: serverTimestamp()
+        };
 
         try {
             await addDoc(collection(db, "careers"), careerData);
@@ -875,4 +873,4 @@ window.handleCareerSubmit = async function(e) {
 </body>
 </html>
 
-
+Check the file
